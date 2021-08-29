@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { signup } from '../actions/auth';
@@ -35,6 +36,25 @@ const Signup = ({ signup, isAuthenticated, loading }) => {
         setAccountCreated(true);
     };
 
+    const continue_with_google = async () => {
+        try {
+            const res = await axios.get(`${process.env.REACT_APP_API_URL}/auth/o/google-oauth2/?redirect_uri=${process.env.REACT_APP_API_URL}/google`);
+
+            window.location.replace(res.data.authorization_url);
+        } catch (err) {
+
+        }
+    };
+
+    const continue_with_facebook = async () => {
+        try {
+            const res = await axios.get(`${process.env.REACT_APP_API_URL}/auth/o/facebook/?redirect_uri=${process.env.REACT_APP_API_URL}/facebook`);
+
+            window.location.replace(res.data.authorization_url);
+        } catch (err) {
+
+        }
+    };
 
     if (isAuthenticated)
         return <Redirect to='/' />;
@@ -120,6 +140,13 @@ const Signup = ({ signup, isAuthenticated, loading }) => {
                     )
                 }
             </form>
+            <button className='btn btn-danger mt-3' onClick={continue_with_google}>
+                Continue With Google
+            </button>
+            <br />
+            <button className='btn btn-primary mt-3' onClick={continue_with_facebook}>
+                Continue With Facebook
+            </button>
             <p className='mt-3'>
                 Already have an account? <Link to='/login'>Sign In</Link>
             </p>

@@ -1,42 +1,53 @@
 import React, { useState, Fragment } from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+import { logout } from '../actions/auth';
 import { Link, NavLink } from 'react-router-dom';
+import Alert from './Alert';
 
-
-const navbar = () => ({
-    isAuthenticated
+const Navbar = ({
+    isAuthenticated,
+    logout
+    
 }) => {
+    const [redirect, setRedirect] = useState(false);
+
+    const logoutHandler = () => {
+        logout();
+        setRedirect(true);
+    };
+
     const authLinks = (
         <li className='nav-item'>
-            <NavLink
-                className='nav-link' 
-                href='!#'
+            <a 
+                className='nav-link'
+                onClick={logoutHandler} 
+                href='#!'
             >
                 Logout
-            </NavLink>
+            </a>
         </li>
     );
+
     const guestLinks = (
         <Fragment>
             <li className='nav-item'>
-                <NavLink
+                <NavLink 
                     className='nav-link' 
-                    href='/login'
+                    to='/login'
                 >
                     Login
                 </NavLink>
             </li>
-
             <li className='nav-item'>
-                <NavLink
+                <NavLink 
                     className='nav-link' 
-                    href='/signup'
+                    to='/signup'
                 >
                     Sign Up
                 </NavLink>
             </li>
         </Fragment>
-
     );
 
     const getNavbar = () => (
@@ -64,6 +75,14 @@ const navbar = () => ({
                             Home
                         </NavLink>
                     </li>
+                    <li className='nav-item'>
+                        <NavLink 
+                            className='nav-link' 
+                            to='/shop'
+                        >
+                            Shop
+                        </NavLink>
+                    </li>
                     {
                         isAuthenticated ? authLinks : guestLinks
                     }
@@ -72,10 +91,28 @@ const navbar = () => ({
         </nav>
     );
 
-    
+    const renderNavbar = () => {
+        if (redirect) {
+            return (
+                <Fragment>
+                    {getNavbar()}
+                    <Alert />
+                    <Redirect to='/' />
+                </Fragment>
+            );
+        } else {
+            return (
+                <Fragment>
+                    {getNavbar()}
+                    <Alert />
+                </Fragment>
+            );
+        }
+    };
+
     return (
         <Fragment>
-            {getNavbar()}
+            {renderNavbar()}
         </Fragment>
     );
 };
@@ -84,4 +121,6 @@ const mapStateToProps = state => ({
     isAuthenticated: state.auth.isAuthenticated
 });
 
-export default connect(mapStateToProps, {})(navbar);
+export default connect(mapStateToProps, {
+    logout
+})(Navbar);

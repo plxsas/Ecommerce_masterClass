@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'user',
+    'category',
+    'product',
 ]
 
 MIDDLEWARE = [
@@ -161,6 +163,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
+
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('JWT', ),
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
@@ -193,8 +196,8 @@ DJOSER = {
     }
 }
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '896352185748-0m925d5lsk1rr71jpldar6437chi2dg1.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'pYDeI_gNHzWbHJe7uzba9saB'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '396238520330-hje0quvb15hrqou3fets9t4vpftjaqqt.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'QSJqcVcquWidOzOec4PKjMir'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
@@ -202,12 +205,16 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
 ]
 SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
 
-SOCIAL_AUTH_FACEBOOK_KEY = '1439844333054582'
-SOCIAL_AUTH_FACEBOOK_SECRET = 'c51457b8c6776c9f6fe984286127bc0a'
+
+
+SOCIAL_AUTH_FACEBOOK_KEY = '4345557475488148'
+SOCIAL_AUTH_FACEBOOK_SECRET = '879ac5af069a781d02af255602ae4ac2'
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
 SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
     'fields': 'email, first_name, last_name'
 }
+
+
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000'
