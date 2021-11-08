@@ -45,6 +45,10 @@ INSTALLED_APPS = [
     'user',
     'category',
     'product',
+    'cart',
+    'shipping',
+    'orders',
+    'payment',
 ]
 
 MIDDLEWARE = [
@@ -195,6 +199,11 @@ DJOSER = {
         'user_delete': 'djoser.serializers.UserDeleteSerializer',
     }
 }
+
+BT_ENVIRONMENT = 'sandbox'
+BT_MERCHANT_ID = '3py89s2zrn2493mh'
+BT_PUBLIC_KEY = '4csg8ntj5n7px7rs'
+BT_PRIVATE_KEY = 'b7ea5436d216a19d7910252e15929f9f'
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '396238520330-hje0quvb15hrqou3fets9t4vpftjaqqt.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'QSJqcVcquWidOzOec4PKjMir'
