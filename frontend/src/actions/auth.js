@@ -2,6 +2,12 @@ import axios from 'axios';
 import { combineReducers } from 'redux';
 import { setAlert } from './alert';
 import {
+    get_items,
+    get_total,
+    get_item_total,
+    synch_cart
+} from './cart';
+import {
     SIGNUP_SUCCESS,
     SIGNUP_FAIL,
     LOGIN_SUCCESS,
@@ -121,7 +127,8 @@ export const load_user = () => async dispatch => {
         };
 
         try {
-            const res = await axios.get(`${process.env.REACT_APP_API_URL}/auth/users/me`, config);
+            const res = await axios.get(`${process.env.REACT_APP_API_URL}/auth/users/me/`, config);
+
             if (res.status === 200) {
                 dispatch({
                     type: USER_LOADED_SUCCESS,
@@ -173,6 +180,7 @@ export const login = (email, password) => async dispatch => {
                 type: REMOVE_AUTH_LOADING
             });
             dispatch(setAlert('Logged in successfully', 'success'));
+            dispatch(synch_cart());
         } else {
             dispatch({
                 type: LOGIN_FAIL,
@@ -227,6 +235,7 @@ export const google_authenticate = (state, code) => async dispatch => {
                     type: REMOVE_AUTH_LOADING
                 });
                 dispatch(setAlert('Logged in successfully', 'success'));
+                dispatch(synch_cart());
             } else {
                 dispatch({
                     type: GOOGLE_AUTH_FAIL
@@ -281,6 +290,7 @@ export const facebook_authenticate = (state, code) => async dispatch => {
                     type: REMOVE_AUTH_LOADING
                 });
                 dispatch(setAlert('Logged in successfully', 'success'));
+                dispatch(synch_cart());
             } else {
                 dispatch({
                     type: FACEBOOK_AUTH_FAIL
@@ -304,7 +314,7 @@ export const facebook_authenticate = (state, code) => async dispatch => {
 
 
 export const activate = (uid, token) => async dispatch => {
-    dispatch ({
+    dispatch({
         type: SET_AUTH_LOADING
     });
 
@@ -320,15 +330,15 @@ export const activate = (uid, token) => async dispatch => {
     });
 
     try {
-        const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/activation/`, body, config)
+        const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/users/activation/`, body, config);
 
         if (res.status === 204) {
             dispatch({
                 type: ACTIVATION_SUCCESS
             });
-            dispatch(setAlert('Successfully activated your account', 'success'));
+            dispatch(setAlert('Successfully activated your Account', 'success'));
         } else {
-            dispatch ({
+            dispatch({
                 type: ACTIVATION_FAIL
             });
             dispatch(setAlert('Error activating account', 'danger'));
@@ -352,7 +362,7 @@ export const refresh = () => async dispatch => {
         const config = {
             headers: {
                 'Accept': 'application/json',
-                'Content': 'application/json'
+                'Content-Type': 'application/json'
             }
         };
 
@@ -361,7 +371,7 @@ export const refresh = () => async dispatch => {
         });
 
         try {
-            const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/jwt/refresh`, body, config);
+            const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/jwt/refresh/`, body, config);
 
             if (res.status === 200) {
                 dispatch({
@@ -384,6 +394,7 @@ export const refresh = () => async dispatch => {
         });
     }
 };
+
 
 export const reset_password = (email) => async dispatch => {
     dispatch({
@@ -492,4 +503,7 @@ export const logout = () => dispatch => {
         type: LOGOUT
     });
     dispatch(setAlert('Logout Out', 'success'));
+    dispatch(get_items());
+    dispatch(get_item_total());
+    dispatch(get_total());
 };

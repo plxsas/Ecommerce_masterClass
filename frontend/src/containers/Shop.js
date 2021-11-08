@@ -1,19 +1,51 @@
 import React, { useState, useEffect } from 'react';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { 
+    get_products, 
+    get_filtered_products 
+} from '../actions/products';
+import {
+    add_item,
+    get_items,
+    get_total,
+    get_item_total
+} from '../actions/cart';
 import { get_categories } from '../actions/categories';
+import Card from '../components/Card';
+import ShopForm from '../components/ShopForm';
 
 const Shop = ({
     categories,
-    get_categories
+    get_categories,
+    products,
+    get_products,
+    filtered_products,
+    get_filtered_products,
+    add_item,
+    get_items,
+    get_total,
+    get_item_total,
 }) => {
+    const [redirect, setRedirect] = useState(false);
+    const [filtered, setFiltered] = useState(false);
     const [formData, setFormData] = useState({
         category_id: '0',
+        price_range: 'Any',
+        sortBy: 'date_created',
+        order: 'desc'
     });
 
-    const { category_id } = formData;
+    const { 
+        category_id, 
+        price_range,
+        sortBy,
+        order
+    } = formData;
 
     useEffect(() => {
         get_categories();
+        get_products();
         window.scrollTo(0, 0);
     }, []);
 
@@ -22,7 +54,72 @@ const Shop = ({
     const onSubmit = e => {
         e.preventDefault();
         window.scrollTo(0, 0);
+
+        get_filtered_products(category_id, price_range, sortBy, order);
+        setFiltered(true);
     };
+
+    const showProducts = () => {
+        let results = [];
+        let display = [];
+
+        if (
+            filtered_products &&
+            filtered_products !== null &&
+            filtered_products !== undefined &&
+            filtered
+        ) {
+            filtered_products.map((product, index) => {
+                return display.push(
+                    <div key={index} className='col-4'>
+                        <Card
+                            product={product}
+                            add_item={add_item}
+                            get_items={get_items}
+                            get_total={get_total}
+                            get_item_total={get_item_total}
+                            setRedirect={setRedirect}
+                        />
+                    </div>
+                );
+            });
+        } else if (
+            !filtered && 
+            products &&
+            products !== null && 
+            products !== undefined
+        ) {
+            products.map((product, index) => {
+                return display.push(
+                    <div key={index} className='col-4'>
+                        <Card
+                            product={product}
+                            add_item={add_item}
+                            get_items={get_items}
+                            get_total={get_total}
+                            get_item_total={get_item_total}
+                            setRedirect={setRedirect}
+                        />
+                    </div>
+                );
+            });
+        }
+
+        for (let i = 0; i < display.length; i += 3) {
+            results.push(
+                <div key={i} className='row'>
+                    {display[i] ? display[i] : <div className='col-4'></div>}
+                    {display[i+1] ? display[i+1] : <div className='col-4'></div>}
+                    {display[i+2] ? display[i+2] : <div className='col-4'></div>}
+                </div>
+            );
+        }
+
+        return results;
+    };
+
+    if (redirect)
+        return <Redirect to='/cart-or-continue-shopping' />;
 
     return (
         <div className='container'>
@@ -34,87 +131,16 @@ const Shop = ({
             </div>
             <div className='row'>
                 <div className='col-2'>
-                    <form className='mb-5'>
-                        <h5>Categories:</h5>
-
-                        <div className='form-check'>
-                            <input
-                                onChange={e => onChange(e)}
-                                value={'0'}
-                                name='category_id'
-                                type='radio'
-                                className='form-check-input'
-                                defaultChecked
-                            />
-                            <label className='form-check-label'>All</label>
-                        </div>
-                        {
-                            categories &&
-                            categories !== null &&
-                            categories !== undefined &&
-                            categories.map(category => {
-                                if (category.sub_categories.length === 0) {
-                                    return (
-                                        <div key={category.id} className='form-check'>
-                                            <input
-                                                onChange={e => onChange(e)}
-                                                value={category.id.toString()}
-                                                name='category_id'
-                                                type='radio'
-                                                className='form-check-input'
-                                            />
-                                            <label className='form-check-label'>
-                                                {category.name}
-                                            </label>
-                                        </div>
-                                    );
-                                } else {
-                                    let result = [];
-
-                                    result.push(
-                                        <div key={category.id} className='form-check'>
-                                            <input
-                                                onChange={e => onChange(e)}
-                                                value={category.id.toString()}
-                                                name='category_id'
-                                                type='radio'
-                                                className='form-check-input'
-                                            />
-                                            <label className='form-check-label'>
-                                                {category.name}
-                                            </label>
-                                        </div>
-                                    );
-
-                                    category.sub_categories.map(sub_category => {
-                                        result.push(
-                                            <div key={sub_category.id} className='form-check ml-2'>
-                                                <input
-                                                    onChange={e => onChange(e)}
-                                                    value={sub_category.id.toString()}
-                                                    name='category_id'
-                                                    type='radio'
-                                                    className='form-check-input'
-                                                />
-                                                <label className='form-check-label'>
-                                                    {sub_category.name}
-                                                </label>
-                                            </div>
-                                        );
-                                    });
-
-                                    return result;
-                                }
-                            })
-                        }
-
-                        <button className='btn btn-success mt-3'>
-                            Update
-                        </button>
-                    </form>
+                    <ShopForm
+                        onChange={onChange}
+                        onSubmit={onSubmit}
+                        categories={categories}
+                        sortBy={sortBy}
+                        order={order}
+                    />
                 </div>
                 <div className='col-10'>
-                    Products
+                    {showProducts()}
                 </div>
             </div>
         </div>
@@ -122,9 +148,17 @@ const Shop = ({
 };
 
 const mapStateToProps = state => ({
-    categories: state.categories.categories
+    categories: state.categories.categories,
+    products: state.products.products,
+    filtered_products: state.products.filtered_products
 });
 
 export default connect(mapStateToProps, {
-    get_categories
+    get_categories,
+    get_products,
+    get_filtered_products,
+    add_item,
+    get_items,
+    get_total,
+    get_item_total,
 })(Shop);
