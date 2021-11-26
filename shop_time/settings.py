@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
@@ -52,6 +53,7 @@ MIDDLEWARE = [
     'social_django.middleware.SocialAuthExceptionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -167,7 +169,7 @@ DJOSER = {
     'ACTIVATION_URL': 'activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
     'SOCIAL_AUTH_TOKEN_STRATEGY': 'djoser.social.token.jwt.TokenStrategy',
-    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['http://localhost:8000/google', 'http://localhost:8000/facebook'],
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['http://167.172.60.151/google', 'http://167.172.60.151/facebook'],
     'SERIALIZERS': {
         'user_create': 'user.serializers.UserCreateSerializer',
         'user': 'user.serializers.UserCreateSerializer',
@@ -181,7 +183,7 @@ FILE_UPLOAD_PERMISSIONS = 0o640
 AUTH_USER_MODEL = 'user.UserAccount'
 
 
-
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 try:
     from .local_settings import *
